@@ -8,7 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Unzip project
-        run: unzip -q WhiteHouseArchive.zip
+        run: |
+          ZIP=$(find . -iname "WhiteHouseArchive.zip" | head -1)
+          echo "Using: $ZIP"
+          unzip -q "$ZIP"
+          ls
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
