@@ -1,18 +1,26 @@
 name: Build app
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Unzip project
+        run: unzip -q WhiteHouseArchive.zip
+      - uses: actions/setup-java@v4
         with:
-          node-version: 20
-      - run: npm install
-      - run: npm run build
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+      - name: Build
+        run: gradle assembleDebug
+        working-directory: WhiteHouseArchive
       - uses: actions/upload-artifact@v4
         with:
-          name: compiled-app
-          path: dist
+          name: WhiteHouseArchive-apk
+          path: WhiteHouseArchive/app/build/outputs/apk/debug/app-debug.apk
